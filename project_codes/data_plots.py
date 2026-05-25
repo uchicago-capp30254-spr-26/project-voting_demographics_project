@@ -42,7 +42,7 @@ def main():
     plt.close()
 
     table5 = df.pivot_table(columns="MARST", values="not_voted", aggfunc="mean")
-    plt.figure(figsize=(8.5,2))
+    plt.figure(figsize=(8.5,3))
     sns.heatmap(table5, annot=True, fmt=".2f", cmap="Reds")
     plt.title("Non-voting Rate by Spouse Status")
     plt.savefig(PATH / "data5.png")
@@ -62,7 +62,7 @@ def main():
                             values="not_voted", aggfunc="mean")
     plt.figure(figsize=(7,4))
     sns.heatmap(table7, annot=True, fmt=".2f", cmap="Reds")
-    plt.title("Non-voting Rate by Family Size and Number of Children")
+    plt.title("Non-voting Rate by Number of Children")
     plt.savefig(PATH / "data7.png")
     plt.close()
 
