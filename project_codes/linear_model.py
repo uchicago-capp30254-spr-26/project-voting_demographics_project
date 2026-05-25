@@ -8,6 +8,7 @@ from data_processing import ProcessedData
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_validate 
 from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 import warnings
 
@@ -75,21 +76,6 @@ class LinearModel:
         ax.legend()
         plt.tight_layout()
         plt.savefig('linear_model_hyperparams.png')
-
-    def confusion_matrix(self):
-        # TODO: from homework 3, edit to fit this model
-        knn = KNN(X_train, y_train, K=100, distance_weighted=True)
-        yhat_valid = knn.predict(X_valid)
-        # YOUR CODE HERE
-        from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-
-        # create the confustion matrix
-        cm = confusion_matrix(y_valid, yhat_valid)
-
-        # plot the confusion matrix
-        labels = np.array(['THEFT', 'BATTERY', 'CRIMINAL DAMAGE', 'ASSAULT'])
-        ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels).plot()
-        plt.show()
     
     def train(self):
         best_penalty, best_C, best_class_weight, _, _ = self.find_hyperparams()
@@ -98,17 +84,26 @@ class LinearModel:
         self.model.fit(self.data.train_x, self.data.train_y)
 
         coef_table = pd.DataFrame(zip(self.data.feature_order, np.transpose(self.model.coef_)), columns=['features', 'coef'])
+        coef_table.to_csv('linear_model_coefficients.csv', index=False)
 
-        return self.model, coef_table
+        return self.model
 
     def evaluate(self):
         prediction = self.model.predict(self.data.test_x)
+
+        # create the confustion matrix
+        cm = confusion_matrix(self.data.test_y, prediction)
+
+        # plot the confusion matrix
+        display = ConfusionMatrixDisplay(confusion_matrix=cm)
+        display.plot()
+        plt.savefig('linear_model_confusion_matrix.png')
         
+        # return the classification report
         return classification_report(self.data.test_y, prediction)    
 
 if __name__ == "__main__":
     lm = LinearModel()
-    _, coef_table = lm.train()
-    print(coef_table)
+    lm.train()
     lm.plot_hyperparams(lm.scores)
     lm.evaluate()
