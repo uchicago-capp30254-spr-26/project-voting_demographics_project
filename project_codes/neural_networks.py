@@ -154,7 +154,7 @@ def train_loop(dataset_handler):
                                   "hidden_dim": hd, "learning_rate": lr,
                                   "penalty": p}
 
-                        if not f1_history or len(f1_history) < 5:
+                        if not f1_history or len(f1_history) < 7:
                             result["f1"] = 0
                             results.append(result)
                             continue
