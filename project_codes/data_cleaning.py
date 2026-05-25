@@ -1,6 +1,8 @@
+from pathlib import Path
 import pandas as pd
 
-PATH = "data/cps_00007.dat"
+BASE_DIR = Path(__file__).resolve().parent.parent
+PATH = BASE_DIR / "data" / "cps_00007.dat"
 
 COLSPECS = [(0,4), (4,9), (9,11), (11,21), (21,35), (35,37), (37,39), (39,40),
             (40,43), (43,45), (45,59), (59,74), (74,88), (88,90), (90,91),
@@ -42,6 +44,10 @@ class Dataset:
 
 
 def cleaned_data():
+    """
+    Clean the dataset, performs feature engineering, and creates the final dataset used for modeling.
+    """
+    
     data = Dataset(PATH, COLSPECS, NAMES)
 
     ## VOTED: 1 Did not vote, 2 Voted
