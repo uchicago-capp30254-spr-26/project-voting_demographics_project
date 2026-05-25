@@ -14,7 +14,7 @@ class ProcessedData:
 
         categorical_feature = ["SEX", "RACE", "EDUC", "EMPSTAT", "NATIVITY", "REGION",
                                "METRO", "MARST", "DIFFMOB"]
-        numerical_feature = ["AGE", "FAMSIZE", "NCHILD", "FAMINC", "INCOME_PER_PERSON"]
+        numerical_feature = ["AGE", "NCHILD", "INCOME_PER_PERSON"]
 
         ## training set 70%, validation set 10%, test set 20%
         #added stratify in addition to neural networks code

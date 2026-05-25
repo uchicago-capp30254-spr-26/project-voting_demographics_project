@@ -147,8 +147,7 @@ def cleaned_data():
     df["INCOME_PER_PERSON"] = df["FAMINC"].astype(float) / df["FAMSIZE"].astype(float)
 
     using_cols = ["VOTED", "SEX", "RACE", "EDUC", "EMPSTAT", "NATIVITY", "REGION",
-                  "METRO", "MARST", "DIFFMOB", "AGE", "FAMSIZE", "NCHILD", "FAMINC",
-                  "INCOME_PER_PERSON"]
+                  "METRO", "MARST", "DIFFMOB", "AGE", "NCHILD", "INCOME_PER_PERSON"]
     
     df = df[using_cols].copy()
 
@@ -157,4 +156,4 @@ def cleaned_data():
 
 if __name__ == "__main__":
     result = cleaned_data()
-    result.to_csv("data/cleaned_data.csv", index = False)
+    result.to_csv(BASE_DIR / "data" / "cleaned_data.csv", index = False)
