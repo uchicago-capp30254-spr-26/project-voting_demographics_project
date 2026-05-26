@@ -49,6 +49,7 @@ class LinearModel:
         # save to the model to plot later
         self.scores = scores
         (best_penalty, best_C, best_class_weight), (mean_train, mean_test) = max(scores.items(), key=lambda item: item[1][1])
+        print(f'Combination with the highest score: [penalty = {best_penalty}, C = {best_C}, and class_weight = {best_class_weight}] \n \t mean train score: {mean_train} \n \t mean test score: {mean_test}')
         return best_penalty, best_C, best_class_weight, mean_train, mean_test
     
     def plot_hyperparams(self, scores):
@@ -95,12 +96,14 @@ class LinearModel:
         cm = confusion_matrix(self.data.test_y, prediction)
 
         # plot the confusion matrix
-        display = ConfusionMatrixDisplay(confusion_matrix=cm)
+        display = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['voted', 'not_voted'])
         display.plot()
         plt.savefig('linear_model_confusion_matrix.png')
         
         # return the classification report
-        return classification_report(self.data.test_y, prediction)    
+        report = classification_report(self.data.test_y, prediction)
+        print(f"Classification report: \n {report}")   
+        return report
 
 if __name__ == "__main__":
     lm = LinearModel()
