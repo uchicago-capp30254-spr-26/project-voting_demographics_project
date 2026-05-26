@@ -1,3 +1,5 @@
+## we referred to the class architecture from the assignments, but rewrote most of the code.
+
 from pathlib import Path
 
 import torch
