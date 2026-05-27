@@ -8,9 +8,14 @@ from data_processing import ProcessedData
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_validate 
 from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import f1_score, confusion_matrix, ConfusionMatrixDisplay
 
 import warnings
+from pathlib import Path
+
+# add path for visualizations
+BASE_DIR = Path(__file__).resolve().parent.parent
+PATH = BASE_DIR / "final_report" / "plots"
 
 # supress penalty deprecation warning, since it still works with liblinear
 warnings.filterwarnings('ignore', message=".*penalty.*deprecated.*")
@@ -49,7 +54,12 @@ class LinearModel:
         # save to the model to plot later
         self.scores = scores
         (best_penalty, best_C, best_class_weight), (mean_train, mean_test) = max(scores.items(), key=lambda item: item[1][1])
-        print(f'Combination with the highest score: [penalty = {best_penalty}, C = {best_C}, and class_weight = {best_class_weight}] \n \t mean train score: {mean_train} \n \t mean test score: {mean_test}')
+        print(f'''----- Cross Validation Results -----
+              \n penalty = {best_penalty} 
+              \n C = {best_C} 
+              \n class_weight = {best_class_weight} 
+              \n mean train score: {mean_train} 
+              \n mean test score: {mean_test} \n''')
         return best_penalty, best_C, best_class_weight, mean_train, mean_test
     
     def plot_hyperparams(self, scores):
@@ -76,7 +86,7 @@ class LinearModel:
         ax.set_title('Hyperparameter Test Scores')
         ax.legend()
         plt.tight_layout()
-        plt.savefig('linear_model_hyperparams.png')
+        plt.savefig(PATH / 'linear_model_hyperparams.png')
     
     def train(self):
         best_penalty, best_C, best_class_weight, _, _ = self.find_hyperparams()
@@ -85,28 +95,40 @@ class LinearModel:
         self.model.fit(self.data.train_x, self.data.train_y)
 
         coef_table = pd.DataFrame(zip(self.data.feature_order, np.transpose(self.model.coef_)), columns=['features', 'coef'])
-        coef_table.to_csv('linear_model_coefficients.csv', index=False)
+        coef_table.to_csv(PATH / 'linear_model_coefficients.csv', index=False)
 
         return self.model
 
-    def evaluate(self):
-        prediction = self.model.predict(self.data.test_x)
+    def test(self):
+        predictions = self.model.predict(self.data.test_x)
+        # calculate the F1 score
+        f1 = f1_score(self.data.test_y, predictions)
+
 
         # create the confustion matrix
-        cm = confusion_matrix(self.data.test_y, prediction)
+        cm = confusion_matrix(self.data.test_y, predictions)
+        # access false positive and false negative rates
+        tn, fp, fn, tp = cm[0,0], cm[0,1], cm[1,0], cm[1,1]
 
-        # plot the confusion matrix
+        # plot the confusion matrix and save file for the final report
         display = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['voted', 'not_voted'])
         display.plot()
-        plt.savefig('linear_model_confusion_matrix.png')
+        plt.savefig(PATH / 'linear_model_confusion_matrix.png')
+
+        # print the results
+        print("----- Test Results ----- \n")
+        print(f"F1 Score: {f1} \n")
+
+        print(f"Confusion matrix: \n {cm} \n")
+        print(f"False negative rate: {fn / (fn + tp)} \n")
+        print(f"False positive rate: {fp / (fp + tn)} \n")
         
-        # return the classification report
-        report = classification_report(self.data.test_y, prediction)
-        print(f"Classification report: \n {report}")   
-        return report
+        # print the classification report that includes other metrics
+        report = classification_report(self.data.test_y, predictions)
+        print(f"Other test metrics: \n {report}")   
 
 if __name__ == "__main__":
     lm = LinearModel()
     lm.train()
     lm.plot_hyperparams(lm.scores)
-    lm.evaluate()
+    lm.test()
