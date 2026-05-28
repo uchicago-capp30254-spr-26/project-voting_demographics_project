@@ -24,6 +24,9 @@ class LinearModel:
 
     def __init__(self):
         self.data = ProcessedData(random_state=1234)
+        self.model = None
+        self.scores = None
+        self.coef_df = None
 
     def logreg_variations(self, X, y, penalty = 'l2', C = 1.0, cv = 5, class_weight = None):
         '''
@@ -111,10 +114,36 @@ class LinearModel:
         self.model = LogisticRegression(penalty=best_penalty, C=best_C, solver='liblinear', class_weight=best_class_weight)
         self.model.fit(self.data.train_x, self.data.train_y)
 
-        coef_table = pd.DataFrame(zip(self.data.feature_order, np.transpose(self.model.coef_)), columns=['features', 'coef'])
-        coef_table.to_csv(PATH / 'logistic_regression_coefficients.csv', index=False)
+        # save the coefficients to a dataframe for returning and plotting results
+        self.coef_df = pd.DataFrame(zip(self.data.feature_order, self.model.coef_[0]), columns=['features', 'coefficients'])
+        self.coef_df.to_csv(PATH / 'logistic_regression_coefficients.csv', index=False)
 
         return self.model
+    
+    def plot_coefficients(self):
+        '''
+        Plot the coefficients for the final report.
+        '''
+        # drop zero coefficients
+        coefs = self.coef_df[self.coef_df['coefficients'] != 0]
+        coefs = coefs.sort_values('coefficients')
+
+        # print the top coefficients to the terminal
+        print("---- Training Results ----- \n")
+        top_features = coefs.reindex(coefs['coefficients'].abs().sort_values(ascending=False).index).head(5)
+        print(f"Top features: \n {top_features} \n")
+
+        # plot the coefficients for the final report
+        colors = ['red' if c > 0 else 'blue' for c in coefs['coefficients']]
+
+        plt.figure(figsize=(10, 8))
+        plt.barh(coefs['features'], coefs['coefficients'], color=colors)
+        plt.axvline(x=0, color='black', linewidth=0.8)
+        plt.ylabel('Feature')
+        plt.xlabel('Coefficient')
+        plt.title('Logistic Regression Coefficients')
+        plt.tight_layout()
+        plt.savefig(PATH / 'logistic_regression_coefficients.png')  
 
     def test(self):
         '''
@@ -144,10 +173,13 @@ class LinearModel:
         
         # print the classification report that includes other metrics
         report = classification_report(self.data.test_y, predictions)
-        print(f"Other test metrics: \n {report}")   
+        print(f"Other test metrics: \n {report}")
+
+ 
 
 if __name__ == "__main__":
     lm = LinearModel()
     lm.train()
+    lm.plot_coefficients()
     lm.plot_hyperparams(lm.scores)
     lm.test()
