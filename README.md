@@ -34,12 +34,17 @@ All plots will be saved in the `final_report/plots` folder.
 
 
 ## Data Source
-Name: IPUMS CPS (Current Population Survey) November 2024 Voting Supplement
-Source URL: https://cps.ipums.org/
-  - To download the raw data, users must create an account and log in. For this project, the raw data is provided in the data folder.
-Source Type: Bulk Data  
+
+Name: IPUMS CPS (Current Population Survey) November 2024 Voting Supplement  
+
+Source URL: https://cps.ipums.org/  
+  - To download the raw data, users must create an account and log in. For this project, the raw data is provided in the data folder.   
+
+Source Type: Bulk Data   
+
 Summary: The CPS is a nationally representative survey conducted by the U.S. Census Bureau. The voting supplement includes individual-level responses related to voting behavior and voter turnout in the 2024 election cycle. It also contains demographic and socioeconomic variables such as age, gender, education, income, and employment status, which can be used to model and predict voter participation.
 
 
 ## Project Report
+
 [Open PDF](./final_report/final_report.pdf)
