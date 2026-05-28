@@ -20,18 +20,25 @@ PATH = BASE_DIR / "final_report" / "plots"
 # supress penalty deprecation warning, since it still works with liblinear
 warnings.filterwarnings('ignore', message=".*penalty.*deprecated.*")
 
-class LinearModel:
+class LogisticRegression:
 
     def __init__(self):
         self.data = ProcessedData(random_state=1234)
 
     def logreg_variations(self, X, y, penalty = 'l2', C = 1.0, cv = 5, class_weight = None):
+        '''
+        Run cross validation for the model.
+        '''
         logreg = LogisticRegression(penalty=penalty, C=C, solver='liblinear', class_weight=class_weight)
         scores = cross_validate(logreg, X, y, cv=cv, return_train_score=True, scoring = 'f1')
 
         return scores
 
     def find_hyperparams(self):
+        '''
+        Use the hyperparameters of interest to run cross validation and find the
+        best model.
+        '''
         regularizers = ['l1', 'l2']
         C_list = list(np.logspace(-4, 1, 50))  # 0.0001 to 10, 50 points
         # class_weight='balanced' can help with imbalanced dataset, which
@@ -54,15 +61,22 @@ class LinearModel:
         # save to the model to plot later
         self.scores = scores
         (best_penalty, best_C, best_class_weight), (mean_train, mean_test) = max(scores.items(), key=lambda item: item[1][1])
+
+        # print results to the terminal
         print(f'''----- Cross Validation Results -----
               \n penalty = {best_penalty} 
               \n C = {best_C} 
               \n class_weight = {best_class_weight} 
               \n mean train score: {mean_train} 
               \n mean test score: {mean_test} \n''')
+        
+        # return the best hyperparameters to pass into the model
         return best_penalty, best_C, best_class_weight, mean_train, mean_test
     
     def plot_hyperparams(self, scores):
+        '''
+        Plot the cross validation results of all hyperparameter combinations.
+        '''
         combos = [('l1', None), ('l1', 'balanced'), ('l2', None), ('l2', 'balanced')]
         colors = ['blue', 'orange', 'green', 'red']
 
@@ -73,14 +87,14 @@ class LinearModel:
                         if p == penalty and cw == class_weight}
             
             C_vals = sorted(filtered.keys())
-            # only including the test scores because train ans test scores were
+            # only including the test scores because train and test scores were
             # virtually the same, so the lines completely overlapped
             test_scores = [filtered[C][1] for C in C_vals]
 
             label = f"{penalty}, {class_weight}"
             ax.plot(C_vals, test_scores, color=color, linestyle='-', label=f"{label}")
 
-        ax.set_xscale('log')  # important since C_list uses logspace
+        ax.set_xscale('log')  # C_list uses logspace
         ax.set_xlabel('C')
         ax.set_ylabel('F1 Score')
         ax.set_title('Hyperparameter Test Scores')
@@ -89,6 +103,9 @@ class LinearModel:
         plt.savefig(PATH / 'logistic_regression_hyperparams.png')
     
     def train(self):
+        '''
+        Train the logistic regression model.
+        '''
         best_penalty, best_C, best_class_weight, _, _ = self.find_hyperparams()
         
         self.model = LogisticRegression(penalty=best_penalty, C=best_C, solver='liblinear', class_weight=best_class_weight)
@@ -100,10 +117,12 @@ class LinearModel:
         return self.model
 
     def test(self):
+        '''
+        Test the logistic regression model.
+        '''
         predictions = self.model.predict(self.data.test_x)
         # calculate the F1 score
         f1 = f1_score(self.data.test_y, predictions)
-
 
         # create the confustion matrix
         cm = confusion_matrix(self.data.test_y, predictions)
@@ -128,7 +147,7 @@ class LinearModel:
         print(f"Other test metrics: \n {report}")   
 
 if __name__ == "__main__":
-    lm = LinearModel()
-    lm.train()
-    lm.plot_hyperparams(lm.scores)
-    lm.test()
+    lr = LogisticRegression()
+    lr.train()
+    lr.plot_hyperparams(lr.scores)
+    lr.test()

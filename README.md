@@ -20,17 +20,17 @@ The results, presented in a final report, highlight the predictive power of demo
 
 ## Instructions on How to Run the Code
 
-1. In the project_codes folder, run the following commands in the terminal to see the results of each model:
-- Logistic Regression: python logistic_regression.py
-- Random Forest: python random_forest.py
-- Neural Networks: python neural_networks.py   
-After each script finishes running, the results will be printed in the terminal, and all plots will be saved in the final_report/plots folder.
+1. In the `project` folder, run the following commands in the terminal to see the results of each model:
+- Logistic Regression: `python logistic_regression.py`
+- Random Forest: `python random_forest.py`
+- Neural Networks: `python neural_networks.py`   
+After each script finishes running, the results will be printed in the terminal, and all plots will be saved in the `final_report/plots` folder.
 
-2. To view the cleaned data, run the following command in the project_codes folder: python data_cleaning.py  
-The cleaned dataset (cleaned_data.csv) will be saved in the data folder.
+2. To view the cleaned data, run the following command in the `project` folder: `python data_cleaning.py`  
+The cleaned dataset (`cleaned_data.csv`) will be saved in the data folder.
 
-3. To generate feature-related plots, run the following command in the project_codes folder: python data_plots.py  
-All plots will be saved in the final_report/plots folder.
+3. To generate feature-related plots, run the following command in the `project` folder: `python data_plots.py`
+All plots will be saved in the `final_report/plots` folder.
 
 
 ## Data Source
