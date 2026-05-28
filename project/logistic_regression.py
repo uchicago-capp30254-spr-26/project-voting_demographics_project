@@ -20,7 +20,7 @@ PATH = BASE_DIR / "final_report" / "plots"
 # supress penalty deprecation warning, since it still works with liblinear
 warnings.filterwarnings('ignore', message=".*penalty.*deprecated.*")
 
-class LogisticRegression:
+class LinearModel:
 
     def __init__(self):
         self.data = ProcessedData(random_state=1234)
@@ -147,7 +147,7 @@ class LogisticRegression:
         print(f"Other test metrics: \n {report}")   
 
 if __name__ == "__main__":
-    lr = LogisticRegression()
-    lr.train()
-    lr.plot_hyperparams(lr.scores)
-    lr.test()
+    lm = LinearModel()
+    lm.train()
+    lm.plot_hyperparams(lm.scores)
+    lm.test()
