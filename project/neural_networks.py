@@ -82,7 +82,9 @@ class Model():
         self.torch_dataset = TorchDataset(dataset, BATCH_SIZE)
         self.model = TorchNetwork(self.torch_dataset.X_train.shape[1], hidden_layer, hidden_dim)
         self.optim = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=penalty)
+        ## Apply a weight to the positive class (not_voted) to address class imbalance
         self.pos_weight = torch.tensor([(self.torch_dataset.y_train == 0).sum()/(self.torch_dataset.y_train == 1).sum()]).float()
+        ## Use BCEWithLogitsLoss, which combines sigmoid activation and binary cross-entropy loss
         self.loss_func = nn.BCEWithLogitsLoss(pos_weight=self.pos_weight)
 
     def train(self, epochs=50, threshold=0.5):
@@ -106,6 +108,7 @@ class Model():
 
             avg_loss = total_loss/len(self.torch_dataset.X_train)
 
+            ## Early stop if loss increases instead of decreasing after several epochs
             if epoch == 0 :
                 initial_loss = avg_loss
             elif epoch > 5 and avg_loss > initial_loss:
@@ -156,11 +159,13 @@ def train_loop(dataset_handler):
                                   "hidden_dim": hd, "learning_rate": lr,
                                   "penalty": p}
 
+                        ## Ignore results from runs that ended early
                         if not f1_history or len(f1_history) < 7:
                             result["f1"] = 0
                             results.append(result)
                             continue
-
+                        
+                        ## Reject results if F1 scores are unstable (high standard deviation)
                         f1_std = np.std(f1_history)
                         if f1_std > 0.1:
                             result["f1"] = 0
@@ -170,6 +175,7 @@ def train_loop(dataset_handler):
                         current_f1_mean = np.mean(f1_history[-5:])
                         result["f1"] = current_f1_mean
                         results.append(result)
+                        ## Adjust F1 score by subtracting its standard deviation to reflect stability
                         score = current_f1_mean - f1_std
 
                         if score > best_score:
