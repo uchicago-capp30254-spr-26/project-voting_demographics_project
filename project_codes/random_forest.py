@@ -11,7 +11,11 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 from data_processing import ProcessedData
+from pathlib import Path
 
+# add path for visualizations
+BASE_DIR = Path(__file__).resolve().parent.parent
+PATH = BASE_DIR / "final_report" / "plots"
 
 # ClassificationResult class — adapted from course notebook 
 # Avoids repetition of code whenever we want to print final metric summary
@@ -71,7 +75,7 @@ def tune_n_estimators(X_train, y_train, X_val, y_val):
     ax.set_title("Performance vs. number of trees", fontsize=13)
     ax.grid(alpha=0.25)
     fig.tight_layout()
-    plt.show()
+    plt.savefig(PATH / 'random_forest_performance.png')
 
 # Use oob-error to find optimal trees
 #same purpose as above but another metric
@@ -101,7 +105,7 @@ def tune_n_estimators_oob(X_train, y_train):
     ax.set_title("OOB error vs. number of trees", fontsize=13)
     ax.grid(alpha=0.25)
     fig.tight_layout()
-    plt.show()
+    plt.savefig(PATH / 'random_forest_obb.png')
 
     return n_values, oob_errors
 
@@ -177,7 +181,7 @@ def plot_threshold_sweep(sweep, best_t):
     ax.legend(fontsize=10)
     ax.grid(alpha=0.25)
     fig.tight_layout()
-    plt.show()
+    plt.savefig(PATH / 'random_forest_threshold.png')
 
 #find top features within features available using permutation
 #the method uses validation dataset and shuffles feature column to see how it affects
@@ -192,7 +196,6 @@ def get_top_features(rf, X_val, y_val, feature_names, top_n=5):
 
 
 def main():
-    from data_processing import ProcessedData
 
     ds = ProcessedData(random_state=123)
     bal = np.bincount(ds.train_y)

@@ -206,7 +206,7 @@ def final_result(dataset_handler):
     plt.title("Mean F1 Score by Number of Hidden Layers and Hidden Dimensions")
     plt.ylabel("Number of Hidden Layers")
     plt.xlabel("Number of Hidden Dimension")
-    plt.savefig(PATH / "heatmap_hl_hd")
+    plt.savefig(PATH / "neural_networks_heatmap_hl_hd")
     plt.close()
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
@@ -224,7 +224,7 @@ def final_result(dataset_handler):
     ax.set_title("F1 Score over Epochs by Hidden Layers")
     ax.set_ylabel("f1 score")
     ax.set_xlabel("epochs")
-    plt.savefig(PATH / "f1_hidden_layers.png")
+    plt.savefig(PATH / "neural_networks_f1_hidden_layers.png")
     plt.close()
 
 def main():
