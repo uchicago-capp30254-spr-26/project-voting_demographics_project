@@ -160,7 +160,7 @@ def train_loop(dataset_handler):
                                   "penalty": p}
 
                         ## Ignore results from runs that ended early
-                        if not f1_history or len(f1_history) < 7:
+                        if not f1_history or len(f1_history) < 6:
                             result["f1"] = 0
                             results.append(result)
                             continue
@@ -175,7 +175,7 @@ def train_loop(dataset_handler):
                         current_f1_mean = np.mean(f1_history[-5:])
                         result["f1"] = current_f1_mean
                         results.append(result)
-                        ## Adjust F1 score by subtracting its standard deviation to reflect stability
+                        ## Adjust the F1 score by subtracting its standard deviation to reflect stability
                         score = current_f1_mean - f1_std
 
                         if score > best_score:
